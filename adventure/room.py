@@ -7,6 +7,13 @@ class Room:
         self.name = name 
         self.description = description
         self.exits = exits
+    
+    def has_exit(self, direction: str) -> bool:
+        return direction in self.exits
+
+    def get_exit_id(self, direction: str) -> str:
+        if self.has_exit(direction):
+            return self.exits[direction]
 
     def __str__(self) -> str:
         display = "# " + self.name + "\n" + self.description.strip() + "\n" + "Exits: "
