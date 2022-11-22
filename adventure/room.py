@@ -7,7 +7,7 @@ class Room:
         self.name = name 
         self.description = description
         self.exits = exits
-    
+
     def has_exit(self, direction: str) -> bool:
         return direction in self.exits
 

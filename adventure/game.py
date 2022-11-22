@@ -26,6 +26,14 @@ class Game:
             
     def next(self) -> None:
         command_orig = input("> ")
+        if command_orig == "":
+            return
+        
+        self.parse_and_execute_command(command_orig)
+
+        print("")
+    
+    def parse_and_execute_command(self, command_orig: str) -> None:
         params = command_orig.strip().lower().split(maxsplit=2)
         command = params[0]
         argument = params[1] if len(params) == 2 else None
@@ -38,8 +46,6 @@ class Game:
             self.go(argument)
         else:
             print(f"Can't {command_orig} here.")
-
-        print("")
 
     def run(self) -> bool:
         if self.running is None:
