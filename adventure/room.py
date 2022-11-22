@@ -1,26 +1,35 @@
-from typing import Dict
-from adventure.constants import COMPASS_SHORT_MAP
+from adventure.utils import get_reverse_direction, COMPASS_SHORT_MAP
 
 class Room:
-    def __init__(self, id: str, name: str, description: str, exits: Dict[str, str]) -> None:
-        self.id = id
-        self.name = name 
+    def __init__(self, name: str, description: str="") -> None:
+        self.name = name
         self.description = description
-        self.exits = exits
+        self.exits = {k: None for k in ['n', 's', 'e', 'w']}
 
     def has_exit(self, direction: str) -> bool:
-        return direction in self.exits
+        assert direction in self.exits
+        return self.exits[direction] is not None
 
-    def get_exit_id(self, direction: str) -> str:
-        if self.has_exit(direction):
+    def get_exit(self, direction: str) -> 'Room':
+        if not self.has_exit(direction):
+            return None
+        else:
             return self.exits[direction]
 
-    def __str__(self) -> str:
-        display = "# " + self.name + "\n" + self.description.strip() + "\n" + "Exits: "
+    def set_exit(self, direction: str, room: 'Room', reverse: bool=True) -> None:
+        assert direction in self.exits
+        self.exits[direction] = room
+        if reverse:
+            room.exits[get_reverse_direction(direction)] = self
+        else:
+            room.exits[get_reverse_direction(direction)] = None
+
+    def describe(self) -> str:
+        descr = f"# {self.name}" + "\n" + self.description.strip() + "\n" + "Exits: "
 
         if len(self.exits):
-            display += ", ".join(map(lambda d: COMPASS_SHORT_MAP[d].capitalize(), self.exits.keys()))
+            descr += ", ".join(map(lambda d: COMPASS_SHORT_MAP[d].capitalize(), [k for k, v in self.exits.items() if v is not None]))
         else:
-            display += "(none)"
+            descr += "(none)"
 
-        return display
+        return descr
