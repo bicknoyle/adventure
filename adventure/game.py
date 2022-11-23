@@ -5,18 +5,17 @@ class Game:
     def __init__(self) -> None:
         self.running = None
         self.current_room = None
+        self.start_message = ""
+        self.exit_message = ""
 
-        # TODO - make this configurable?
-        airlock = Room("Airlock", "This is the airlock room. There are a bunch of flashing lights and things.")
-        self.current_room = airlock
+    def set_current_room(self, room: 'Room') -> None:
+        self.current_room = room
 
-        control = Room("Control Room", "This is the control room. There's a whole bunch of controls in here.")
-        airlock.set_exit('s', control)
+    def set_start_message(self, message: str) -> None:
+        self.start_message = message
 
-        lab = Room("Laboratory", "This is the laboratory. Science!")
-        storage = Room("Storage Room", "You have entered the storage room. The air in here smells musty.")
-        control.set_exit('e', lab)
-        control.set_exit('w', storage)
+    def set_exit_message(self, message: str) -> None:
+        self.exit_message = message
 
     def next(self) -> None:
         command_orig = input("> ")
@@ -45,13 +44,13 @@ class Game:
         if self.running is None:
             self.running = True
 
-        print("start_message")
+        print(self.start_message)
         print("")
 
         while self.running:
             self.next()
 
-        print("exit_message")
+        print(self.exit_message)
 
     """
     COMMANDS
