@@ -1,14 +1,18 @@
-from adventure.utils import get_reverse_direction, COMPASS_SHORT_MAP
+from adventure.utils import make_compass_dict, get_reverse_direction, COMPASS_SHORT_MAP
 
 class Room:
     def __init__(self, name: str, description: str="") -> None:
         self.name = name
         self.description = description
-        self.exits = {k: None for k in ['n', 's', 'e', 'w']}
+        self.exits = make_compass_dict()
+        self.gates = make_compass_dict()
 
     def has_exit(self, direction: str) -> bool:
         assert direction in self.exits
         return self.exits[direction] is not None
+
+    def can_exit(self, direction: str) -> bool:
+        return self.has_exit(direction) and self.check_gate(direction)
 
     def get_exit(self, direction: str) -> 'Room':
         if not self.has_exit(direction):
@@ -24,11 +28,25 @@ class Room:
         else:
             room.exits[get_reverse_direction(direction)] = None
 
+    def set_gate(self, directon: str, callback) -> None:
+        assert directon in self.gates
+        self.gates[directon] = callback
+
+    def check_gate(self, direction: str) -> None:
+        assert direction in self.gates
+        if self.gates[direction] is None:
+            return True
+        return self.gates[direction](self)
+
+    def get_available_exits(self):
+        return tuple(d for d in self.exits.keys() if self.has_exit(d) and self.check_gate(d))
+
     def describe(self) -> str:
         descr = f"# {self.name}" + "\n" + self.description.strip() + "\n" + "Exits: "
 
-        if len(self.exits):
-            descr += ", ".join(map(lambda d: COMPASS_SHORT_MAP[d].capitalize(), [k for k, v in self.exits.items() if v is not None]))
+        available_exits = self.get_available_exits()
+        if len(available_exits):
+            descr += ", ".join(map(lambda d: COMPASS_SHORT_MAP[d].capitalize(), available_exits))
         else:
             descr += "(none)"
 
