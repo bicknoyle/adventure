@@ -1,3 +1,4 @@
+from adventure.event import EventEmitter, EventError
 from adventure.utils import make_compass_dict, get_reverse_direction, COMPASS_SHORT_MAP
 
 class Room:
@@ -5,20 +6,22 @@ class Room:
         self.name = name
         self.description = description
         self.exits = make_compass_dict()
-        self.gates = make_compass_dict()
+        self.emitter = EventEmitter()
 
     def has_exit(self, direction: str) -> bool:
         assert direction in self.exits
         return self.exits[direction] is not None
 
-    def can_exit(self, direction: str) -> bool:
-        return self.has_exit(direction) and self.check_gate(direction)
-
     def get_exit(self, direction: str) -> 'Room':
         if not self.has_exit(direction):
             return None
-        else:
-            return self.exits[direction]
+
+        try:
+            self.emitter.emit('get_exit', direction=direction)
+        except EventError as e:
+            return None
+
+        return self.exits[direction]
 
     def set_exit(self, direction: str, room: 'Room', reverse: bool=True) -> None:
         assert direction in self.exits
@@ -28,18 +31,8 @@ class Room:
         else:
             room.exits[get_reverse_direction(direction)] = None
 
-    def set_gate(self, directon: str, callback) -> None:
-        assert directon in self.gates
-        self.gates[directon] = callback
-
-    def check_gate(self, direction: str) -> None:
-        assert direction in self.gates
-        if self.gates[direction] is None:
-            return True
-        return self.gates[direction](self)
-
     def get_available_exits(self):
-        return tuple(d for d in self.exits.keys() if self.has_exit(d) and self.check_gate(d))
+        return tuple(d for d in self.exits.keys() if self.has_exit(d))
 
     def describe(self) -> str:
         descr = f"# {self.name}" + "\n" + self.description.strip() + "\n" + "Exits: "

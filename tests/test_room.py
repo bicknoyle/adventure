@@ -1,6 +1,7 @@
 import unittest
 
 from adventure.room import Room
+from adventure.event import EventError
 
 class TestRoom(unittest.TestCase):
     def test_construct(self):
@@ -13,36 +14,25 @@ class TestRoom(unittest.TestCase):
 
         elevator = Room(name='Elevator Room')
         lobby.set_exit('s', elevator)
-        self.assertTrue(lobby.can_exit('s'))
-        self.assertTrue(elevator.can_exit('n'))
+        self.assertTrue(lobby.has_exit('s'))
+        self.assertTrue(elevator.has_exit('n'))
 
         lobby.set_exit('s', elevator, reverse=False)
-        self.assertFalse(elevator.can_exit('n'))
+        self.assertFalse(elevator.has_exit('n'))
 
         with self.assertRaises(AssertionError):
             lobby.set_exit('x', elevator)
 
         self.assertEqual(lobby.get_exit('s'), elevator)
 
-    def test_gates(self):
-        room_a = Room(name='Room A')
-        room_b = Room(name='Room B')
+    def test_get_exit_event(self):
+        lobby = Room(name='Lobby')
+        elevator = Room(name='Elevator Room')
+        lobby.set_exit('s', elevator)
 
-        def falsey_gate(room):
-            pass
+        def this_explodes(direction: str) -> None:
+            raise EventError()
 
-        room_a.set_exit('e', room_b)
-        room_a.set_gate('e', falsey_gate)
-        self.assertFalse(room_a.check_gate('e'))
-        self.assertFalse(room_a.can_exit('e'))
-        self.assertEqual(room_a.get_available_exits(), ())
+        lobby.emitter.on('get_exit', this_explodes)
 
-        print(room_a.describe())
-
-        def truthy_gate(room):
-            return True
-
-        room_a.set_gate('e', truthy_gate)
-        self.assertTrue(room_a.check_gate('e'))
-        self.assertTrue(room_a.can_exit('e'))
-        self.assertEqual(room_a.get_available_exits(), ('e',))
+        self.assertIsNone(lobby.get_exit('s'))

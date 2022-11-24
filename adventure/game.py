@@ -61,9 +61,9 @@ class Game:
 
     def go(self, direction: str) -> None:
         normalized = direction[0:1]
-        if not self.current_room.can_exit(normalized):
+        room = self.current_room.get_exit(normalized)
+        if not room:
             print(f"Can't go {direction}.")
         else:
-            room = self.current_room.get_exit(normalized)
             self.current_room = room
             self.look()
