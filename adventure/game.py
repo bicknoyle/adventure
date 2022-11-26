@@ -1,12 +1,13 @@
-import os
+import os, sys
 from adventure.room import Room
 
 class Game:
     def __init__(self) -> None:
-        self.running = None
-        self.current_room = None
+        self.running: bool = None
+        self.current_room: Room = None
         self.start_message = ""
         self.exit_message = ""
+        self.output_handle = sys.stdout
 
     def set_current_room(self, room: 'Room') -> None:
         self.current_room = room
@@ -17,14 +18,17 @@ class Game:
     def set_exit_message(self, message: str) -> None:
         self.exit_message = message
 
-    def next(self) -> None:
-        command_orig = input("> ")
-        if command_orig == "":
+    def set_output_handle(self, handle) -> None:
+        self.output_handle = handle
+
+    def next(self, command: str=None) -> None:
+        # TODO: refactor
+        if command is None:
+            command = input("> ")
+        if command == "":
             return
 
-        self.parse_and_execute_command(command_orig)
-
-        print("")
+        self.parse_and_execute_command(command)
 
     def parse_and_execute_command(self, command_orig: str) -> None:
         params = command_orig.strip().lower().split(maxsplit=2)
@@ -32,38 +36,47 @@ class Game:
         argument = params[1] if len(params) == 2 else None
 
         if command == "exit" and not argument:
-            self.running = False
+            self.exit()
         elif command == "look" and not argument:
             self.look()
         elif command == "go" and argument:
             self.go(argument)
         else:
-            print(f"Can't {command_orig} here.")
+            self.output(f"Can't {command_orig} here.")
 
-    def run(self) -> bool:
+    def start(self) -> None:
         if self.running is None:
             self.running = True
+        else:
+            raise Exception("Already started!")
 
-        print(self.start_message)
-        print("")
+        self.output(self.start_message)
+
+    def run(self) -> bool:
+        self.start()
 
         while self.running:
             self.next()
 
-        print(self.exit_message)
+    def output(self, message: str):
+        print(message, file=self.output_handle)
 
     """
     COMMANDS
     """
 
     def look(self) -> None:
-        print(self.current_room.describe())
+        self.output(self.current_room.describe())
 
     def go(self, direction: str) -> None:
         normalized = direction[0:1]
         room = self.current_room.get_exit(normalized)
         if not room:
-            print(f"Can't go {direction}.")
+            self.output(f"Can't go {direction}.")
         else:
             self.current_room = room
             self.look()
+
+    def exit(self) -> None:
+        self.output(self.exit_message)
+        self.running = False
