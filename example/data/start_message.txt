@@ -1,0 +1,1 @@
+Welcome to adventure! This is the example game.
