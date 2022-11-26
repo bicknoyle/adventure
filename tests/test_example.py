@@ -1,7 +1,7 @@
 import unittest
 import io
 
-from example import setup_game
+from example.game import setup_game
 
 class TestExample(unittest.TestCase):
     def setUp(self) -> None:
