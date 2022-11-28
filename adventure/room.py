@@ -1,3 +1,4 @@
+from adventure.exceptions import ExitNotFoundError
 from adventure.hooks import hookable, Hooks
 from adventure.utils import make_compass_dict, get_reverse_direction, COMPASS_SHORT_MAP
 
@@ -14,8 +15,8 @@ class Room:
 
     @hookable
     def get_exit(self, direction: str) -> 'Room':
-        if not self.has_exit(direction):
-            return None
+        if not self.exits[direction]:
+            raise ExitNotFoundError()
 
         return self.exits[direction]
 

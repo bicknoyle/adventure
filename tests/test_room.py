@@ -1,7 +1,6 @@
 import unittest
 
 from adventure.room import Room
-from adventure.hooks import HookError
 
 class TestRoom(unittest.TestCase):
     def test_construct(self):
@@ -28,11 +27,13 @@ class TestRoom(unittest.TestCase):
     def test_get_exit_hook(self):
         lobby = Room(name='Lobby')
         elevator = Room(name='Elevator Room')
+        other = Room(name='Other Room')
         lobby.set_exit('s', elevator)
 
-        def this_explodes(self, direction: str) -> None:
-            raise HookError()
+        def exit_override(self, direction: str) -> None:
+            if direction == 's':
+                return other
 
-        lobby.hooks.on('pre_get_exit', this_explodes)
+        lobby.hooks.on('pre_get_exit', exit_override)
 
-        self.assertIsNone(lobby.get_exit('s'))
+        self.assertEqual(lobby.get_exit('s'), other)

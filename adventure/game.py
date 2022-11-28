@@ -1,7 +1,15 @@
-import os, sys
+import re
+import sys
 from adventure.room import Room
+from adventure.exceptions import ExitNotFoundError
 
 class Game:
+    COMMANDS = {
+        "^look$": "look",
+        "^exit$": "exit",
+        "^go (n|s|e|w|north|south|east|west)$": "go"
+    }
+
     def __init__(self) -> None:
         self.running: bool = None
         self.current_room: Room = None
@@ -28,21 +36,20 @@ class Game:
         if command == "":
             return
 
-        self.parse_and_execute_command(command)
+        self.run_command(command)
 
-    def parse_and_execute_command(self, command_orig: str) -> None:
-        params = command_orig.strip().lower().split(maxsplit=2)
-        command = params[0]
-        argument = params[1] if len(params) == 2 else None
+    def run_command(self, command: str) -> None:
+        for pattern, method in self.COMMANDS.items():
+            p = re.compile(pattern)
+            m = p.match(command)
+            if not m:
+                continue
+            args = m.groups()
+            fn = getattr(self, method)
+            fn(*args)
+            return
 
-        if command == "exit" and not argument:
-            self.exit()
-        elif command == "look" and not argument:
-            self.look()
-        elif command == "go" and argument:
-            self.go(argument)
-        else:
-            self.output(f"Can't {command_orig} here.")
+        self.output(f"Can't {command} here.")
 
     def start(self) -> None:
         if self.running is None:
@@ -70,8 +77,10 @@ class Game:
 
     def go(self, direction: str) -> None:
         normalized = direction[0:1]
-        room = self.current_room.get_exit(normalized)
-        if not room:
+        room = None
+        try:
+            room = self.current_room.get_exit(normalized)
+        except ExitNotFoundError as e:
             self.output(f"Can't go {direction}.")
         else:
             self.current_room = room

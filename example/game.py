@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 from adventure.game import Game
 from adventure.room import Room
-from adventure.hooks import HookError
+from adventure.exceptions import ExitNotFoundError
 
 def load_copy(copydeck) -> None:
     cwd = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data')) + os.path.sep
@@ -40,7 +40,7 @@ def setup_game():
     def airlock_outer_door(self, direction: str) -> None:
         if direction == 'n':
             game.output(copydeck.get('airlock.exit_n'))
-            raise HookError()
+            raise ExitNotFoundError()
 
     airlock.hooks.on('pre_get_exit', airlock_outer_door)
 
