@@ -1,4 +1,4 @@
-from adventure.event import EventEmitter, EventError
+from adventure.hooks import hookable, Hooks
 from adventure.utils import make_compass_dict, get_reverse_direction, COMPASS_SHORT_MAP
 
 class Room:
@@ -6,19 +6,15 @@ class Room:
         self.name = name
         self.description = description
         self.exits = make_compass_dict()
-        self.emitter = EventEmitter()
+        self.hooks = Hooks()
 
     def has_exit(self, direction: str) -> bool:
         assert direction in self.exits
         return self.exits[direction] is not None
 
+    @hookable
     def get_exit(self, direction: str) -> 'Room':
         if not self.has_exit(direction):
-            return None
-
-        try:
-            self.emitter.emit('get_exit', direction=direction)
-        except EventError as e:
             return None
 
         return self.exits[direction]
