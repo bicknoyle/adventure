@@ -1,7 +1,7 @@
 import unittest
 
 from adventure.room import Room
-from adventure.event import EventError
+from adventure.hooks import HookError
 
 class TestRoom(unittest.TestCase):
     def test_construct(self):
@@ -25,14 +25,14 @@ class TestRoom(unittest.TestCase):
 
         self.assertEqual(lobby.get_exit('s'), elevator)
 
-    def test_get_exit_event(self):
+    def test_get_exit_hook(self):
         lobby = Room(name='Lobby')
         elevator = Room(name='Elevator Room')
         lobby.set_exit('s', elevator)
 
-        def this_explodes(direction: str) -> None:
-            raise EventError()
+        def this_explodes(self, direction: str) -> None:
+            raise HookError()
 
-        lobby.emitter.on('get_exit', this_explodes)
+        lobby.hooks.on('pre_get_exit', this_explodes)
 
         self.assertIsNone(lobby.get_exit('s'))

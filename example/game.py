@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 from adventure.game import Game
 from adventure.room import Room
-from adventure.event import EventError
+from adventure.hooks import HookError
 
 def load_copy(copydeck) -> None:
     cwd = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data')) + os.path.sep
@@ -37,12 +37,12 @@ def setup_game():
 
     space = Room("Space", copydeck.get('space.description'))
     airlock.set_exit('n', space)
-    def airlock_outer_door(direction: str) -> None:
+    def airlock_outer_door(self, direction: str) -> None:
         if direction == 'n':
             game.output(copydeck.get('airlock.exit_n'))
-            raise EventError()
+            raise HookError()
 
-    airlock.emitter.on('get_exit', airlock_outer_door)
+    airlock.hooks.on('pre_get_exit', airlock_outer_door)
 
     game.set_current_room(airlock)
 
