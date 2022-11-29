@@ -1,6 +1,6 @@
 import re
 import sys
-from adventure.room import Room
+from adventure.rooms import Room
 from adventure.exceptions import ExitNotFoundError
 
 class Game:
@@ -79,7 +79,7 @@ class Game:
         normalized = direction[0:1]
         room = None
         try:
-            room = self.current_room.get_exit(normalized)
+            room = self.current_room.exits.get(normalized)
         except ExitNotFoundError as e:
             self.output(f"Can't go {direction}.")
         else:

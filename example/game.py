@@ -5,7 +5,7 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from adventure.game import Game
-from adventure.room import Room
+from adventure.rooms import Room
 from adventure.exceptions import ExitNotFoundError
 
 def load_copy(copydeck) -> None:
@@ -28,21 +28,21 @@ def setup_game():
     airlock = Room("Airlock", copydeck.get('airlock.description'))
 
     control = Room("Control Room", copydeck.get('control.description'))
-    airlock.set_exit('s', control)
+    airlock.exits.set('s', control)
 
     lab = Room("Laboratory", copydeck.get('lab.description'))
     storage = Room("Storage Room", copydeck.get('storage.description'))
-    control.set_exit('e', lab)
-    control.set_exit('w', storage)
+    control.exits.set('e', lab)
+    control.exits.set('w', storage)
 
     space = Room("Space", copydeck.get('space.description'))
-    airlock.set_exit('n', space)
+    airlock.exits.set('n', space)
     def airlock_outer_door(self, direction: str) -> None:
         if direction == 'n':
             game.output(copydeck.get('airlock.exit_n'))
             raise ExitNotFoundError()
 
-    airlock.hooks.on('pre_get_exit', airlock_outer_door)
+    airlock.exits.hooks.on('pre_get', airlock_outer_door)
 
     game.set_current_room(airlock)
 
