@@ -32,7 +32,7 @@ def setup_game():
     airlock.exits.set('s', control)
 
     lab = Room("Laboratory", copydeck.get('lab.description'))
-    keycard = Item(id='keycard')
+    keycard = Item(id='keycard', description=copydeck.get('lab.keycard'))
     lab.inventory.add(keycard)
 
     storage = Room("Storage Room", copydeck.get('storage.description'))

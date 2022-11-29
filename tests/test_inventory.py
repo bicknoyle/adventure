@@ -5,7 +5,7 @@ from adventure.inventory import Inventory, Item
 class TestIventory(unittest.TestCase):
     def setUp(self):
         self.inventory = inventory = Inventory()
-        self.item = Item(id='my_item')
+        self.item = Item(id='my_item', description="A basic item")
         inventory.add(self.item)
 
     def test_add(self):
@@ -27,11 +27,11 @@ class TestIventory(unittest.TestCase):
 
     def test_list(self):
         inventory = self.inventory
-        item = Item(id='another_item')
+        item = Item(id='another_item', description="Another basic item")
         inventory.add(item)
         self.assertEqual(len(inventory.list()), 2)
 
 class TestItem(unittest.TestCase):
     def test_use(self):
-        item = Item(id='my_item')
+        item = Item(id='my_item', description="A basic item")
         self.assertIsNone(item.use())

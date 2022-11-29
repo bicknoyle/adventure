@@ -22,11 +22,14 @@ class Inventory:
         return tuple(i for i in self._items.keys())
 
 class Item:
-    def __init__(self, id: str) -> None:
+    def __init__(self, id: str, description: str) -> None:
         self.id = id
+        self.description = description
         self.hooks = Hooks()
 
     @hookable
     def use(self):
         pass
 
+    def describe(self):
+        return self.description

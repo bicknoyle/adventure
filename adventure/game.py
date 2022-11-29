@@ -1,5 +1,6 @@
 import re
 import sys
+from adventure.player import Player
 from adventure.rooms import Room
 from adventure.exceptions import ExitNotFoundError
 
@@ -9,6 +10,7 @@ class Game:
         "^exit$": "exit",
         "^go (n|s|e|w|north|south|east|west)$": "go",
         "^get ([0-9A-Za-z_\- ]+)$": "get",
+        "^examine ([0-9A-Za-z_\- ]+)$": "examine",
     }
 
     def __init__(self) -> None:
@@ -17,6 +19,7 @@ class Game:
         self.start_message = ""
         self.exit_message = ""
         self.output_handle = sys.stdout
+        self.player = Player()
 
     def set_current_room(self, room: 'Room') -> None:
         self.current_room = room
@@ -94,7 +97,15 @@ class Game:
     def get(self, item_id: str) -> None:
         if self.current_room.inventory.has(item_id):
             item = self.current_room.inventory.remove(item_id)
-            self.output(f"You picked up {item.id}, but it vanishes. Where did it go?")
-            # TODO
+            self.player.inventory.add(item)
+            self.output(f"You picked up {item.id}.")
         else:
             self.output(f"There is no {item_id} here.")
+
+    def examine(self, item_id: str) -> None:
+        if self.player.inventory.has(item_id):
+            self.output(self.player.inventory.get(item_id).describe())
+        elif self.current_room.inventory.has(item_id):
+            self.output(f"You must get {item_id} to examine it.")
+        else:
+            self.output(f"There is no {item_id}.")
