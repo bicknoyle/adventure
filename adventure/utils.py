@@ -5,9 +5,6 @@ COMPASS_SHORT_MAP = {
     "w": "west",
 }
 
-def make_compass_dict():
-    return {k: None for k in ['n', 's', 'e', 'w']}
-
 def get_reverse_direction(direction: str) -> str:
     if direction == 'n':
         return 's'

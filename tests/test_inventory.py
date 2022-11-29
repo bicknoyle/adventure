@@ -25,6 +25,12 @@ class TestIventory(unittest.TestCase):
         with self.assertRaises(KeyError):
             inventory.remove('my_item')
 
+    def test_list(self):
+        inventory = self.inventory
+        item = Item(id='another_item')
+        inventory.add(item)
+        self.assertEqual(len(inventory.list()), 2)
+
 class TestItem(unittest.TestCase):
     def test_use(self):
         item = Item(id='my_item')

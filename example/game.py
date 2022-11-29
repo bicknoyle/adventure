@@ -7,6 +7,7 @@ if __name__ == "__main__":
 from adventure.game import Game
 from adventure.rooms import Room
 from adventure.exceptions import ExitNotFoundError
+from adventure.inventory import Item
 
 def load_copy(copydeck) -> None:
     cwd = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data')) + os.path.sep
@@ -31,7 +32,11 @@ def setup_game():
     airlock.exits.set('s', control)
 
     lab = Room("Laboratory", copydeck.get('lab.description'))
+    keycard = Item(id='keycard')
+    lab.inventory.add(keycard)
+
     storage = Room("Storage Room", copydeck.get('storage.description'))
+
     control.exits.set('e', lab)
     control.exits.set('w', storage)
 

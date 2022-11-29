@@ -2,7 +2,8 @@ from typing import Dict
 
 from adventure.exceptions import ExitNotFoundError
 from adventure.hooks import hookable, Hooks
-from adventure.utils import make_compass_dict, get_reverse_direction, COMPASS_SHORT_MAP
+from adventure.inventory import Inventory
+from adventure.utils import get_reverse_direction, COMPASS_SHORT_MAP
 
 class Exits:
     DIRECTIONS = {'n', 's', 'e', 'w'}
@@ -43,9 +44,21 @@ class Room:
         self.description = description
         self.exits = Exits(self)
         self.hooks = Hooks()
+        self.inventory = Inventory()
 
     def describe(self) -> str:
-        descr = f"# {self.name}" + "\n" + self.description.strip() + "\n" + "Exits: "
+        descr = f"# {self.name}" + "\n" + self.description.strip() + "\n"
+
+        descr += "Items: "
+        available_items = self.inventory.list()
+        if available_items:
+            descr += ", ".join(available_items)
+        else:
+            descr += "(none)"
+
+        descr += "\n"
+
+        descr += "Exits: "
 
         available_exits = self.exits.available_directions()
         if len(available_exits):

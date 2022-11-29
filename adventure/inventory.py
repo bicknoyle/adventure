@@ -18,6 +18,9 @@ class Inventory:
     def remove(self, item_id: str) -> 'Item':
         return self._items.pop(item_id)
 
+    def list(self) -> tuple:
+        return tuple(i for i in self._items.keys())
+
 class Item:
     def __init__(self, id: str) -> None:
         self.id = id

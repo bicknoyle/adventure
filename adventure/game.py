@@ -7,7 +7,8 @@ class Game:
     COMMANDS = {
         "^look$": "look",
         "^exit$": "exit",
-        "^go (n|s|e|w|north|south|east|west)$": "go"
+        "^go (n|s|e|w|north|south|east|west)$": "go",
+        "^get ([0-9A-Za-z_\- ]+)$": "get",
     }
 
     def __init__(self) -> None:
@@ -89,3 +90,11 @@ class Game:
     def exit(self) -> None:
         self.output(self.exit_message)
         self.running = False
+
+    def get(self, item_id: str) -> None:
+        if self.current_room.inventory.has(item_id):
+            item = self.current_room.inventory.remove(item_id)
+            self.output(f"You picked up {item.id}, but it vanishes. Where did it go?")
+            # TODO
+        else:
+            self.output(f"There is no {item_id} here.")
