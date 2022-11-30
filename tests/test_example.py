@@ -38,9 +38,6 @@ class TestExample(unittest.TestCase):
         game.next('go south')
         self.assertOutputContains(r'control room')
 
-        game.next('go west')
-        self.assertOutputContains(r'storage')
-
         game.next('go east')
         game.next('go east')
         self.assertOutputContains(r'laboratory')
@@ -57,6 +54,13 @@ class TestExample(unittest.TestCase):
 
         game.next('examine keycard')
         self.assertOutputContains(r'An access keycard')
+
+        game.next('go west')
+        game.next('go west')
+        self.assertOutputContains(r'storage room is closed')
+
+        game.next('use keycard')
+        self.assertOutputContains('whoosh')
 
         game.next('exit')
         self.assertOutputContains(r'(?i)thanks for playing')

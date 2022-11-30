@@ -40,6 +40,13 @@ def setup_game():
     control.exits.set('e', lab)
     control.exits.set('w', storage)
 
+    def storage_door(self, direction: str) -> None:
+        if direction == 'w':
+            game.output(copydeck.get('control.exit_w'))
+            raise ExitNotFoundError()
+
+    control.exits.hooks.on('pre_get', storage_door)
+
     space = Room("Space", copydeck.get('space.description'))
     airlock.exits.set('n', space)
     def airlock_outer_door(self, direction: str) -> None:
