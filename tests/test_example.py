@@ -60,7 +60,10 @@ class TestExample(unittest.TestCase):
         self.assertOutputContains(r'storage room is closed')
 
         game.next('use keycard')
-        self.assertOutputContains('whoosh')
+        self.assertOutputContains(r'(?i)whoosh')
+
+        game.next('go west')
+        self.assertOutputContains(r'entered the storage room')
 
         game.next('exit')
         self.assertOutputContains(r'(?i)thanks for playing')

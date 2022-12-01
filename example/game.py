@@ -32,6 +32,7 @@ def setup_game():
     airlock.exits.set('s', control)
 
     lab = Room("Laboratory", copydeck.get('lab.description'))
+
     keycard = Item(id='keycard', description=copydeck.get('lab.keycard'))
     lab.inventory.add(keycard)
 
@@ -42,10 +43,21 @@ def setup_game():
 
     def storage_door(self, direction: str) -> None:
         if direction == 'w':
-            game.output(copydeck.get('control.exit_w'))
-            raise ExitNotFoundError()
-
+            # TODO: better way to access state?
+            if not self._owner.state.get('storage_door_open', False):
+                game.output(copydeck.get('control.exit_w'))
+                raise ExitNotFoundError()
     control.exits.hooks.on('pre_get', storage_door)
+
+    def use_keycard(self, item_id: str):
+        if item_id == "keycard":
+            if not self.state.get('storage_door_open', False):
+                self.state.update(storage_door_open=True)
+                game.output(copydeck.get('control.use_keycard'))
+            else:
+                game.output(copydeck.get('control.use_keycard_done'))
+            return True
+    control.hooks.on('pre_use', use_keycard)
 
     space = Room("Space", copydeck.get('space.description'))
     airlock.exits.set('n', space)

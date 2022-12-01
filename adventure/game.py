@@ -8,9 +8,11 @@ class Game:
     COMMANDS = {
         "^look$": "look",
         "^exit$": "exit",
+        "^quit$": "exit",
         "^go (n|s|e|w|north|south|east|west)$": "go",
         "^get ([0-9A-Za-z_\- ]+)$": "get",
         "^examine ([0-9A-Za-z_\- ]+)$": "examine",
+        "^use ([0-9A-Za-z_\- ]+)$": "use",
     }
 
     def __init__(self) -> None:
@@ -109,3 +111,15 @@ class Game:
             self.output(f"You must get {item_id} to examine it.")
         else:
             self.output(f"There is no {item_id}.")
+
+    def use(self, item_id: str) -> None:
+        if not self.player.inventory.has(item_id):
+            self.output(f"You don't have {item_id} in your inventory.")
+        elif result := self.current_room.use(item_id):
+            # TODO: output if string?
+            pass
+        elif result := self.player.inventory.get(item_id).use():
+            # TODO: output if string?
+            pass
+        else:
+            self.output(f"There is no use for {item_id} here.")

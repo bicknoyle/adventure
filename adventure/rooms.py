@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from adventure.exceptions import ExitNotFoundError
 from adventure.hooks import hookable, Hooks
@@ -45,6 +45,7 @@ class Room:
         self.exits = Exits(self)
         self.hooks = Hooks()
         self.inventory = Inventory()
+        self.state = {}
 
     def describe(self) -> str:
         descr = f"# {self.name}" + "\n" + self.description.strip() + "\n"
@@ -67,3 +68,7 @@ class Room:
             descr += "(none)"
 
         return descr
+
+    @hookable
+    def use(self, item_id: str) -> Any:
+        pass

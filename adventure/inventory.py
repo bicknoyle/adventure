@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from adventure.hooks import Hooks, hookable
 
@@ -28,8 +28,9 @@ class Item:
         self.hooks = Hooks()
 
     @hookable
-    def use(self):
+    def use(self) -> Any:
         pass
 
-    def describe(self):
+    @hookable
+    def describe(self) -> str:
         return self.description
