@@ -16,10 +16,16 @@ class TestExample(unittest.TestCase):
         self.assertTrue(game.running)
         self.assertOutputContains(r'(?i)welcome to adventure')
 
+        # commands that don't work
+        # TODO: move these to their own test?
         game.next('go east')
         self.assertOutputContains(r'(?i)can\'t go east')
         game.next('foobar')
-        self.assertOutputContains(r'(?i)can\'t foobar here')
+        self.assertOutputContains(r'(?i)can\'t foobar')
+        game.next('get foobar')
+        self.assertOutputContains(r'no foobar')
+        game.next('examine foobar')
+        self.assertOutputContains(r'no foobar')
 
         game.next('look')
         self.assertOutputContains(r'airlock')
@@ -32,12 +38,32 @@ class TestExample(unittest.TestCase):
         game.next('go south')
         self.assertOutputContains(r'control room')
 
-        game.next('go west')
-        self.assertOutputContains(r'storage')
-
         game.next('go east')
         game.next('go east')
         self.assertOutputContains(r'laboratory')
+
+        self.assertTrue(game.current_room.inventory.has('keycard'))
+
+        game.next('examine keycard')
+        self.assertOutputContains(r'get keycard to examine')
+
+        game.next('get keycard')
+        self.assertOutputContains(r'picked up keycard')
+        self.assertFalse(game.current_room.inventory.has('keycard'))
+        self.assertTrue(game.player.inventory.has('keycard'))
+
+        game.next('examine keycard')
+        self.assertOutputContains(r'An access keycard')
+
+        game.next('go west')
+        game.next('go west')
+        self.assertOutputContains(r'storage room is closed')
+
+        game.next('use keycard')
+        self.assertOutputContains(r'(?i)whoosh')
+
+        game.next('go west')
+        self.assertOutputContains(r'entered the storage room')
 
         game.next('exit')
         self.assertOutputContains(r'(?i)thanks for playing')

@@ -19,11 +19,7 @@ class HookError(Exception):
 def hookable(fn):
     def decorated_fn(*args, **kwargs):
         result = None
-        try:
-            result = args[0].hooks.run('pre_' + fn.__name__, *args, **kwargs)
-        except HookError as e:
-            return None
-
+        result = args[0].hooks.run('pre_' + fn.__name__, *args, **kwargs)
         if result is not None:
             return result
 
