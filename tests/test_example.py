@@ -45,7 +45,7 @@ class TestExample(unittest.TestCase):
         self.assertTrue(game.current_room.inventory.has('keycard'))
 
         game.next('examine keycard')
-        self.assertOutputContains(r'get keycard to examine')
+        self.assertOutputContains(r'An access keycard')
 
         game.next('get keycard')
         self.assertOutputContains(r'picked up keycard')

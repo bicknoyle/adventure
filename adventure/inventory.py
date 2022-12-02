@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+from adventure.exceptions import ItemNotFoundError
 from adventure.hooks import Hooks, hookable
 
 class Inventory:
@@ -13,9 +14,13 @@ class Inventory:
         return item_id in self._items
 
     def get(self, item_id: str) -> 'Item':
+        if not self.has(item_id):
+            raise ItemNotFoundError()
         return self._items[item_id]
 
     def remove(self, item_id: str) -> 'Item':
+        if not self.has(item_id):
+            raise ItemNotFoundError()
         return self._items.pop(item_id)
 
     def list(self) -> tuple:

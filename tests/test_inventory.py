@@ -1,6 +1,7 @@
 import unittest
 
 from adventure.inventory import Inventory, Item
+from adventure.exceptions import ItemNotFoundError
 
 class TestIventory(unittest.TestCase):
     def setUp(self):
@@ -16,13 +17,13 @@ class TestIventory(unittest.TestCase):
     def test_get(self):
         inventory = self.inventory
         self.assertEqual(inventory.get('my_item'), self.item)
-        with self.assertRaises(KeyError):
+        with self.assertRaises(ItemNotFoundError):
             inventory.get('unknown_item')
 
     def test_remove(self):
         inventory = self.inventory
         self.assertEqual(inventory.remove('my_item'), self.item)
-        with self.assertRaises(KeyError):
+        with self.assertRaises(ItemNotFoundError):
             inventory.remove('my_item')
 
     def test_list(self):
